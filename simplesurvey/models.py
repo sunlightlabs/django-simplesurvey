@@ -36,6 +36,7 @@ class Question(models.Model):
 
 class AnswerSet(models.Model):
     user = models.ForeignKey(User, related_name='answer_sets')
+    question_set = models.ForeignKey(QuestionSet, related_name='answer_sets')
     date = models.DateTimeField(auto_now_add=True)
 
     # allow answer sets to be related to an arbitrary object
