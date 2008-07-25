@@ -42,8 +42,8 @@ class AnswerSet(models.Model):
     # allow answer sets to be related to an arbitrary object
     related_content_type = models.ForeignKey(ContentType, null=True)
     related_object_id = models.PositiveIntegerField(null=True)
-    related_object = generic.GenericForeignKey('related_content_type',
-                                               'related_object_id')
+    related_object = GenericForeignKey('related_content_type',
+                                       'related_object_id')
 
 
 class Answer(models.Model):
