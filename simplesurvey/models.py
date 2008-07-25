@@ -18,14 +18,12 @@ class QuestionSet(models.Model):
 
 class Question(models.Model):
 
-    question_set = models.ForeignKey('Set that Question belongs to',
-                                     QuestionSet, related_name='questions')
+    question_set = models.ForeignKey(QuestionSet, related_name='questions')
 
     type = models.CharField('Question Type', max_length=1,
                             choices=QUESTION_TYPES)
     text = models.CharField('Text of Question', max_length=300)
-    answers = models.TextField('Comma Separated List of Possible Responses',
-                               blank=True)
+    answer_choices = models.TextField('List of Possible Responses', blank=True)
 
     order = models.PositiveIntegerField('Ordering for Question upon display')
     required = models.BooleanField('Question is Required', default=True)
