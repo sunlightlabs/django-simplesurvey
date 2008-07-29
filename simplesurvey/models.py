@@ -72,6 +72,9 @@ class AnswerSet(models.Model):
             return answer
         except Answer.DoesNotExist:
             pass
+            
+    def q_and_a(self):
+        return [(q, self.answer_for_question(q)) for q in self.question_set.questions.all()]
                                        
     def get_user(self):
         """
