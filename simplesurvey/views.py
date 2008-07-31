@@ -1,8 +1,26 @@
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from simplesurvey.forms import SurveyForm
 from simplesurvey.models import Answer, AnswerSet, Question, QuestionSet
+
+#
+# utility methods
+#
+
+def _object_from_contenttype(relation):
+    """
+    Returns an object from a content type definition in the
+    form of <contenttype id>:<object pk>.
+    """
+    if relation:
+        (ct_id, obj_id) = relation.split(":")
+        ct = ContentType.objects.get(pk=ct_id)
+        return ct.model_class().objects.get(pk=obj_id)
+            
+#
+# view methods
+#
 
 def submit(request):
     
@@ -13,15 +31,20 @@ def submit(request):
         try:
             
             question_set = QuestionSet.objects.get(pk=question_set_id)
-            form = SurveyForm(question_set, request.POST)
             
             user = request.user.is_authenticated() and request.user or None
             
-            related = request.POST.get('related', None)
-            if related:
-                (ct_id, obj_id) = related.split(":")
-                ct = ContentType.objects.get(pk=ct_id)
-                related = ct.model_class().objects.get(pk=obj_id)
+            if not user and not question_set.allow_anonymous:
+                raise Http404, "Anonymous users are not allowed to submit answers"
+                
+            if user and not question_set.allow_multiple_responses:
+                count = AnswerSet.objects.filter(question_set=question_set, user=user).count()
+                if count > 0:
+                    raise Http404, "This survey can be completed only once per user"
+            
+            related = _object_from_contenttype(request.POST.get('related', None))
+            
+            form = SurveyForm(question_set, request.POST)
             
             if form.is_valid():
                 
@@ -41,8 +64,8 @@ def submit(request):
                         
                         try:
                         
-                            question = Question.objects.get(pk=k[11:])
-                            
+                            question = Question.objects.get(pk=k[11:], question_set=question_set)
+                        
                             answer = Answer(
                                 question=question,
                                 answer_set=answer_set,
@@ -61,4 +84,4 @@ def submit(request):
                 pass
             
         except QuestionSet.DoesNotExist:
-            pass
+            raise Http404, "question set does not exist"
