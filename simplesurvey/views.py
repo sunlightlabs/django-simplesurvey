@@ -16,7 +16,9 @@ def _object_from_contenttype(relation):
     if relation:
         (ct_id, obj_id) = relation.split(":")
         ct = ContentType.objects.get(pk=ct_id)
-        return ct.model_class().objects.get(pk=obj_id)
+        obj = ct.model_class().objects.get(pk=obj_id)
+        obj.content_type = ct
+        return obj
             
 #
 # view methods
@@ -31,18 +33,19 @@ def submit(request):
         try:
             
             question_set = QuestionSet.objects.get(pk=question_set_id)
-            
             user = request.user.is_authenticated() and request.user or None
+            related = _object_from_contenttype(request.POST.get('related', None))
             
             if not user and not question_set.allow_anonymous:
                 raise Http404, "Anonymous users are not allowed to submit answers"
                 
             if user and not question_set.allow_multiple_responses:
-                count = AnswerSet.objects.filter(question_set=question_set, user=user).count()
+                qs = AnswerSet.objects.filter(question_set=question_set, user=user)
+                if related:
+                    qs = qs.filter(content_type=related.content_type, object_id=related.pk)
+                count = qs.count()
                 if count > 0:
                     raise Http404, "This survey can be completed only once per user"
-            
-            related = _object_from_contenttype(request.POST.get('related', None))
             
             form = SurveyForm(question_set, request.POST)
             
