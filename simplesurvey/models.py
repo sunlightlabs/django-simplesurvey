@@ -9,7 +9,7 @@ QUESTION_TYPES = (
     ('M', 'Multiple Choice'),
     ('S', 'Short Text'),
     ('L', 'Long Text'))
-    
+
 class QuestionSet(models.Model):
     """ Set of Questions that should be displayed and answered together """
 
@@ -17,9 +17,9 @@ class QuestionSet(models.Model):
                             primary_key=True)
     title = models.CharField('Title of Questionnaire', max_length=100)
     description = models.TextField('Description of Questionnaire')
-    
+
     enabled = models.BooleanField('Questionnaire is enabled', default=True)
-    
+
     def __unicode__(self):
         return self.title
 
@@ -38,10 +38,10 @@ class Question(models.Model):
     class Meta:
         ordering = ['order']
         unique_together = ('question_set', 'order')
-        
+
     def __unicode__(self):
         return self.text
-        
+
     def get_possible_answers(self):
         """
         Return a split array of answer choices
@@ -58,11 +58,10 @@ class AnswerSet(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     # allow answer sets to be related to an arbitrary object
-    related_content_type = models.ForeignKey(ContentType, null=True)
-    related_object_id = models.PositiveIntegerField(null=True)
-    related_object = GenericForeignKey('related_content_type',
-                                       'related_object_id')
-                                     
+    content_type = models.ForeignKey(ContentType, null=True)
+    object_id = models.PositiveIntegerField(null=True)
+    related_object = GenericForeignKey('content_type', 'object_id')
+
     def answer_for_question(self, question):
         """
         Return the answer object for a specific question
@@ -72,10 +71,10 @@ class AnswerSet(models.Model):
             return answer
         except Answer.DoesNotExist:
             pass
-            
+
     def q_and_a(self):
         return [(q, self.answer_for_question(q)) for q in self.question_set.questions.all()]
-                                       
+
     def get_user(self):
         """
         Return the user object, or Anonymous if user is null
@@ -83,16 +82,16 @@ class AnswerSet(models.Model):
         if self.user:
             return user
         return ANONYMOUS_USER
-        
+
     def __unicode__(self):
         return u"Answers from %s" % self.get_user().get_full_name()
-        
+
 class Answer(models.Model):
     answer_set = models.ForeignKey(AnswerSet, related_name='answers')
     question = models.ForeignKey(Question, related_name='answers')
     date = models.DateTimeField(auto_now_add=True)
-    
+
     text = models.TextField('Text of Answer')
-    
+
     def __unicode__(self):
         return self.text
