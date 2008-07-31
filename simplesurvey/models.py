@@ -19,6 +19,9 @@ class QuestionSet(models.Model):
     title = models.CharField('Title of Questionnaire', max_length=100)
     description = models.TextField('Description of Questionnaire')
 
+    allow_anonymous = models.BooleanField('Allow anonymous users', default=True)
+    allow_multiple_responses = models.BooleanField('Allow a user to complete the survey multiple times', default=True)
+    
     enabled = models.BooleanField('Questionnaire is enabled', default=True)
 
     def __unicode__(self):
@@ -81,11 +84,12 @@ class AnswerSet(models.Model):
         Return the user object, or Anonymous if user is null
         """
         if self.user:
-            return user
+            return self.user
         return ANONYMOUS_USER
 
     def __unicode__(self):
-        return u"Answers from %s" % self.get_user().get_full_name()
+        user = self.get_user()
+        return u"Answers from %s" % (user.get_full_name() or user.username)
 
 class Answer(models.Model):
     answer_set = models.ForeignKey(AnswerSet, related_name='answers')
