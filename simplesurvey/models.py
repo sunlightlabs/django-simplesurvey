@@ -8,7 +8,9 @@ from simplesurvey import ANONYMOUS_USER
 QUESTION_TYPES = (
     ('M', 'Multiple Choice'),
     ('S', 'Short Text'),
-    ('L', 'Long Text'))
+    ('L', 'Long Text'),
+    ('H', 'Hidden'),
+)
 
 class QuestionSet(models.Model):
     """ Set of Questions that should be displayed and answered together """
