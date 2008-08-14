@@ -49,16 +49,25 @@ class SurveyForm(forms.Form):
         # multiple choice field
         if question.type == 'M':
             
-            choices = [('','')]
-            choices += [(c, c) for c in question.get_possible_answers()]
-            return forms.ChoiceField(choices=choices, label=question.text, required=question.required)
+            choices = [('','')] + [(c, c) for c in question.get_possible_answers()]
+            return forms.ChoiceField(
+                label=question.text,
+                required=question.required,
+                widget=forms.TextInput(attrs={'class':'multiple_choice_field'}),
+                choices=choices)
             
         # short text field
         elif question.type == 'S':
             
-            return forms.CharField(label=question.text, required=question.required)
+            return forms.CharField(
+                label=question.text,
+                required=question.required,
+                widget=forms.TextInput(attrs={'class':'short_text_field'}))
             
         # long text field
         elif question.type == 'L':
             
-            return forms.CharField(widget=forms.Textarea, label=question.text, required=question.required)
+            return forms.CharField(
+                label=question.text,
+                required=question.required,
+                widget=forms.Textarea(attrs={'class':'long_text_field'}))
