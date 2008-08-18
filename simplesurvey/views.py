@@ -31,19 +31,21 @@ def submit(request):
         question_set_id = request.POST.get('question_set', '')
         
         try:
-            
-            question_set = QuestionSet.objects.get(pk=question_set_id)
+        
             user = request.user.is_authenticated() and request.user or None
+            question_set = QuestionSet.objects.get(pk=question_set_id)
             related = _object_from_contenttype(request.POST.get('related', None))
             
             if not user and not question_set.allow_anonymous:
                 raise Http404, "Anonymous users are not allowed to submit answers"
                 
             if user and not question_set.allow_multiple_responses:
+
                 qs = AnswerSet.objects.filter(question_set=question_set, user=user)
                 if related:
                     qs = qs.filter(content_type=related.content_type, object_id=related.pk)
                 count = qs.count()
+
                 if count > 0:
                     raise Http404, "This survey can be completed only once per user"
             

@@ -53,7 +53,7 @@ class SurveyForm(forms.Form):
             return forms.ChoiceField(
                 label=question.text,
                 required=question.required,
-                widget=forms.TextInput(attrs={'class':'multiple_choice_field'}),
+                widget=forms.Select(attrs={'class':'multiple_choice_field'}),
                 choices=choices)
             
         # short text field
