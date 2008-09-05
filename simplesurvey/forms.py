@@ -46,14 +46,24 @@ class SurveyForm(forms.Form):
         Create a form field based on a question.
         """
         
-        # multiple choice field
+        # multiple choice field (select)
         if question.type == 'M':
             
             choices = [('','')] + [(c, c) for c in question.get_possible_answers()]
             return forms.ChoiceField(
                 label=question.text,
                 required=question.required,
-                widget=forms.Select(attrs={'class':'multiple_choice_field'}),
+                widget=forms.Select(attrs={'class':'select_choice_field'}),
+                choices=choices)
+                
+        # multiple choice field (radio)
+        if question.type == 'R':
+
+            choices = [(c, c) for c in question.get_possible_answers()]
+            return forms.ChoiceField(
+                label=question.text,
+                required=question.required,
+                widget=forms.RadioSelect(attrs={'class':'radio_choice_field'}),
                 choices=choices)
             
         # short text field

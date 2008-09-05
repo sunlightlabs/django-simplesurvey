@@ -6,7 +6,8 @@ from django.contrib.contenttypes.generic import GenericForeignKey
 from simplesurvey import ANONYMOUS_USER
 
 QUESTION_TYPES = (
-    ('M', 'Multiple Choice'),
+    ('M', 'Multiple Choice (dropdown)'),
+    ('R', 'Multiple Choice (select one)'),
     ('S', 'Short Text'),
     ('L', 'Long Text'),
 )
