@@ -86,7 +86,9 @@ def submit(request):
                     getattr(settings, 'SIMPLESURVEY_COMPLETE_REDIRECT', '/survey/complete/'))
                 
             else:
-                pass
+                invalid_callback = getattr(settings, "SIMPLESURVEY_INVALID_CALLBACK", None)
+                if invalid_callback:
+                    return invalid_callback(request, form, question_set, related)
             
         except QuestionSet.DoesNotExist:
             raise Http404, "question set does not exist"
