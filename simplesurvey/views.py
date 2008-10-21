@@ -33,7 +33,7 @@ def submit(request):
         try:
         
             user = request.user.is_authenticated() and request.user or None
-            question_set = QuestionSet.objects.get(pk=question_set_id)
+            question_set = QuestionSet.objects.get(slug=question_set_id)
             related = _object_from_contenttype(request.POST.get('related', None))
             
             if not user and not question_set.allow_anonymous:

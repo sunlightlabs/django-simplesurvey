@@ -35,7 +35,7 @@ class SurveyForm(forms.Form):
             self.base_fields['related'] = forms.CharField(widget=forms.HiddenInput, initial=related)
         
         # add question set
-        self.base_fields['question_set'] = forms.CharField(widget=forms.HiddenInput, initial=question_set.pk)
+        self.base_fields['question_set'] = forms.CharField(widget=forms.HiddenInput, initial=question_set.slug)
         
         # copy basefields to fields, duplicate of funcationality in super.__init__
         self.fields = deepcopy(self.base_fields)

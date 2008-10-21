@@ -16,7 +16,7 @@ class QuestionSet(models.Model):
     """ Set of Questions that should be displayed and answered together """
 
     slug = models.SlugField('Slug for referring to Questionnaire',
-                            primary_key=True)
+                            unique=True)
     title = models.CharField('Title of Questionnaire', max_length=100)
     description = models.TextField('Description of Questionnaire')
 
