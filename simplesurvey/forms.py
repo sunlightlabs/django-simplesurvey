@@ -20,7 +20,7 @@ class SurveyForm(forms.Form):
         super(self.__class__, self).__init__(*args, **kwargs)
         
         # iterate over questions and create corresponding form fields
-        for question in question_set.questions.all():
+        for question in question_set.questions.order_by('order'):
             
             name = "answer_for_%i" % question.id
             field = self._get_field(question)
