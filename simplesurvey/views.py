@@ -29,6 +29,7 @@ def submit(request):
     if request.method == 'POST':
         
         question_set_id = request.POST.get('question_set', '')
+        answer_set_id = request.POST.get('answer_set', None)
         
         try:
         
@@ -46,22 +47,28 @@ def submit(request):
                     qs = qs.filter(content_type=related.content_type, object_id=related.pk)
                 count = qs.count()
 
-                if count > 0:
+                if count > 0 and not answer_set_id:
                     raise Http404, "This survey can be completed only once per user"
             
             form = SurveyForm(question_set, request.POST)
             
             if form.is_valid():
                 
-                answer_set = AnswerSet(
-                    question_set=question_set,
-                    user=user
-                )
-                
-                if related:
-                    answer_set.related_object = related
+                if answer_set_id and user:
                     
-                answer_set.save()
+                    answer_set = AnswerSet.objects.get(pk=answer_set_id)
+                    
+                else:
+                    
+                    answer_set = AnswerSet(
+                        question_set=question_set,
+                        user=user
+                    )
+                
+                    if related:
+                        answer_set.related_object = related
+                    
+                    answer_set.save()
                 
                 for k, v in form.cleaned_data.items():
                     
@@ -70,12 +77,19 @@ def submit(request):
                         try:
                         
                             question = Question.objects.get(pk=k[11:], question_set=question_set)
+                            
+                            try:
+                            
+                                answer = answer_set.answers.get(question=question)
+                                answer.text = v
+                                
+                            except Answer.DoesNotExist:
                         
-                            answer = Answer(
-                                question=question,
-                                answer_set=answer_set,
-                                text=v
-                            )
+                                answer = Answer(
+                                    question=question,
+                                    answer_set=answer_set,
+                                    text=v
+                                )
                             
                             answer.save()
                             

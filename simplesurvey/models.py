@@ -56,7 +56,15 @@ class Question(models.Model):
             choices = self.answer_choices.split(sep)
             return [c.strip() for c in choices]
 
+class AnswerSetManager(models.Manager):
+    def for_model(self, model):
+        ct = ContentType.objects.get_for_model(model)
+        return AnswerSet.objects.filter(content_type=ct)
+
 class AnswerSet(models.Model):
+    
+    objects = AnswerSetManager()
+    
     user = models.ForeignKey(User, related_name='answer_sets',
                              blank=True, null=True)
     question_set = models.ForeignKey(QuestionSet, related_name='answer_sets')
