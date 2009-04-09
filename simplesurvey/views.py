@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from simplesurvey.forms import SurveyForm
 from simplesurvey.models import Answer, AnswerSet, Question, QuestionSet
 
@@ -103,6 +103,7 @@ def submit(request):
                 invalid_callback = getattr(settings, "SIMPLESURVEY_INVALID_CALLBACK", None)
                 if invalid_callback:
                     return invalid_callback(request, form, question_set, related)
+                return HttpResponse(form.errors)
             
         except QuestionSet.DoesNotExist:
             raise Http404, "question set does not exist"
