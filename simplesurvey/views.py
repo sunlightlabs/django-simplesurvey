@@ -103,7 +103,7 @@ def submit(request):
                 invalid_callback = getattr(settings, "SIMPLESURVEY_INVALID_CALLBACK", None)
                 if invalid_callback:
                     return invalid_callback(request, form, question_set, related)
-                return HttpResponse(form.errors)
+                return HttpResponse("ERROR: All fields are required")
             
         except QuestionSet.DoesNotExist:
             raise Http404, "question set does not exist"
