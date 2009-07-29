@@ -8,6 +8,7 @@ from simplesurvey import ANONYMOUS_USER
 QUESTION_TYPES = (
     ('M', 'Multiple Choice (dropdown)'),
     ('R', 'Multiple Choice (select one)'),
+    ('C', 'Multiple Choice (checkboxes)'),
     ('S', 'Short Text'),
     ('L', 'Long Text'),
 )
@@ -106,6 +107,9 @@ class Answer(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     text = models.TextField('Text of Answer')
+
+    def multiple_answers(self):
+      return self.text.split("|")
 
     def __unicode__(self):
         return self.text

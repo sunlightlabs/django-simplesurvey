@@ -33,7 +33,7 @@ class SurveyForm(forms.Form):
             
             name = "answer_for_%i" % question.id
             field = self._get_field(question)
-            
+
             if field:
                 self.base_fields[name] = field
                 
@@ -85,6 +85,16 @@ class SurveyForm(forms.Form):
                 label=question.text,
                 required=question.required,
                 widget=forms.RadioSelect(attrs={'class':'radio_choice_field'}),
+                choices=choices)
+        
+        # multiple choice field (checkbox)
+        if question.type == 'C':
+          
+            choices = [(c, c) for c in question.get_possible_answers()]
+            return forms.MultipleChoiceField(
+                label=question.text,
+                required=question.required,
+                widget=forms.CheckboxSelectMultiple(attrs={'class':'checkbox_choice_field'}),
                 choices=choices)
             
         # short text field

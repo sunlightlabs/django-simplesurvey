@@ -78,6 +78,9 @@ def submit(request):
                         
                             question = Question.objects.get(pk=k[11:], question_set=question_set)
                             
+                            if question.type == 'C':
+                              v = "|".join(v)
+                            
                             try:
                             
                                 answer = answer_set.answers.get(question=question)
