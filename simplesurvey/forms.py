@@ -35,19 +35,19 @@ class SurveyForm(forms.Form):
             field = self._get_field(question)
 
             if field:
-                self.base_fields[name] = field
+                self.fields[name] = field
                 
         # add related object if one was specified
         if related_object:
             ct = ContentType.objects.get_for_model(related_object)
             related = u"%i:%s" % (ct.id, related_object.pk)
-            self.base_fields['related'] = forms.CharField(widget=forms.HiddenInput, initial=related)
+            self.fields['related'] = forms.CharField(widget=forms.HiddenInput, initial=related)
             if answer_set:
                 self.data['related'] = related
         
         # populate form with answer_set data if it exists
         if answer_set:
-            self.base_fields['answer_set'] = forms.CharField(widget=forms.HiddenInput, initial=answer_set.pk)
+            self.fields['answer_set'] = forms.CharField(widget=forms.HiddenInput, initial=answer_set.pk)
             self.data['answer_set'] = answer_set.pk
             self.is_bound = True
             for question, answer in answer_set.q_and_a():
@@ -55,12 +55,10 @@ class SurveyForm(forms.Form):
                 self.data[name] = answer.text
                 
         # add question set
-        self.base_fields['question_set'] = forms.CharField(widget=forms.HiddenInput, initial=question_set.slug)
+        self.fields['question_set'] = forms.CharField(widget=forms.HiddenInput, initial=question_set.slug)
         if answer_set:
             self.data['question_set'] = question_set.slug
         
-        # copy basefields to fields, duplicate of funcationality in super.__init__
-        self.fields = deepcopy(self.base_fields)
         
     def _get_field(self, question):
         """
